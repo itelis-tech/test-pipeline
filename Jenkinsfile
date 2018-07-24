@@ -24,13 +24,13 @@ pipeline {
                     }
                 }
                 stage('NPM Tests') {
-                    agent {
-                        docker {
-                            image 'node:8-alpine'
-                            args '-p 3000:3000'
-                        }
-                    }
                     parallel {
+                        agent {
+                            docker {
+                                image 'node:8-alpine'
+                                args '-p 3000:3000'
+                            }
+                        }
                         stage("Unit tests") {
                             steps{ sh 'npm run test' }
                         }
