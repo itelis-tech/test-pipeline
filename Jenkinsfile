@@ -34,9 +34,6 @@ pipeline {
                         stage("Unit tests") {
                             steps{ sh 'npm run test' }
                         }
-                        stage("EtoE Tests") {
-                            steps { sh 'npm run test:e2e' }
-                        }
                         stage("Coverage test") {
                             steps { sh 'npm run test:cov'}
                         }
