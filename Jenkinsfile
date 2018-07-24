@@ -33,12 +33,6 @@ pipeline {
                     stage("Unit tests") {
                         steps{ sh 'npm run test' }
                     }
-                    stage("E2E Tests") {
-                        steps { sh 'npm run test:e2e' }
-                    }
-                    stage("Coverage test") {
-                        steps { sh 'npm run test:cov'}
-                    }
                 )
             }
         }
