@@ -32,10 +32,14 @@ pipeline {
                     }
                     parallel(
                         stage("Unit tests") {
-                            steps{ sh 'npm run test' }
+                            steps { 
+                                sh 'npm run test' 
+                            }
                         }
                         stage("Coverage test") {
-                            steps { sh 'npm run test:cov'}
+                            steps { 
+                                sh 'npm run test:cov'
+                            }
                         }
                     )
                 }
