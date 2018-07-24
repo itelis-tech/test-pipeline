@@ -1,22 +1,52 @@
 pipeline {
-  agent any
-  stages {
-    stage('Ls -al') {
-      parallel {
-        stage('Ls -al') {
-          steps {
-            sshagent(credentials: ['jenkins-ssh-key']) {
-              sh 'ssh administrateur@100.64.80.33 "ls -al"'
-            }
-
-          }
-        }
-        stage('step 1') {
-          steps {
-            sh 'ls -al'
-          }
-        }
-      }
+    agent none
+    environment {
+        CI = 'true'
     }
-  }
+    stages {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:8-alpine'
+                    args '-p 3000:3000'
+                }
+            }
+            steps {
+                echo ">>>> Build for Test"
+                sh 'npm install'
+            }
+        }
+        parallel{
+            stage('Quality scan') {
+                steps {
+                    echo 'scan'
+                }
+            }
+            stage('Tests') {
+                agent {
+                    docker {
+                        image 'node:8-alpine'
+                        args '-p 3000:3000'
+                    }
+                }
+                parallel(
+                    stage("Unit tests") {
+                        steps{ sh 'npm run test' }
+                    }
+                    stage("E2E Tests") {
+                        steps { sh 'npm run test:e2e' }
+                    }
+                    stage("Coverage test") {
+                        steps { sh 'npm run test:cov'}
+                    }
+                )
+            }
+        }
+        stage('Delivery') {
+            steps {
+                echo ">>>> Delivery"
+                sh 'cap ${JOB_BASE_NAME} deploy'
+            }
+        }
+    }
 }
