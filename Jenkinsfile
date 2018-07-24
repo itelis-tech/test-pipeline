@@ -36,11 +36,6 @@ pipeline {
                                 sh 'npm run test' 
                             }
                         }
-                        stage("Coverage test") {
-                            steps { 
-                                sh 'npm run test:cov'
-                            }
-                        }
                     )
                 }
             }
