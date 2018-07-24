@@ -16,24 +16,32 @@ pipeline {
                 sh 'npm install'
             }
         }
-        parallel{
-            stage('Quality scan') {
-                steps {
-                    echo 'scan'
-                }
-            }
-            stage('Tests') {
-                agent {
-                    docker {
-                        image 'node:8-alpine'
-                        args '-p 3000:3000'
+        stage('All Tests') {
+            parallel{
+                stage('Quality scan') {
+                    steps {
+                        echo 'scan'
                     }
                 }
-                parallel(
-                    stage("Unit tests") {
-                        steps{ sh 'npm run test' }
+                stage('Tests') {
+                    agent {
+                        docker {
+                            image 'node:8-alpine'
+                            args '-p 3000:3000'
+                        }
                     }
-                )
+                    parallel(
+                        stage("Unit tests") {
+                            steps{ sh 'npm run test' }
+                        }
+                        stage("EtoE Tests") {
+                            steps { sh 'npm run test:e2e' }
+                        }
+                        stage("Coverage test") {
+                            steps { sh 'npm run test:cov'}
+                        }
+                    )
+                }
             }
         }
         stage('Delivery') {
